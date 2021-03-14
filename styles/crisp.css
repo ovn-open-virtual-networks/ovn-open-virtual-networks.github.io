@@ -106,8 +106,8 @@ img, iframe {
 	max-width: 100%;
 }
 a {
-	font-weight:700;
-	text-decoration:none;
+	font-weight: 700;
+	text-decoration: none;
 	color: #3399; /* Change Link Color */
 }
 a:hover {
@@ -173,6 +173,13 @@ header #logo img {
 	-webkit-border-radius: 4.5em;
 	border: none;
 }
+header #viewmap img {
+	width:15em;
+	height:9em;
+	margin-top: 0.7em;
+	margin-bottom: 0.7em;	
+}
+
 #follow-icons {
 	font-size: 0.7em;
 	margin-top: -0.7em;
