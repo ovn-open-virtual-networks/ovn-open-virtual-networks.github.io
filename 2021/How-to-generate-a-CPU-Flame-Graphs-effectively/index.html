@@ -8,7 +8,7 @@
         <link rel="shortcut icon" href="/img/logo.jpeg"/>
         <link rel="canonical" href="http://guolinn.com/">
         <link rel="alternate" type="application/rss+xml" title="Tonghao Zhang" href="">
-        <title>Archives | Tonghao&#39;s Blog</title>
+        <title>How to Generate a CPU-Flame-Graphs effectively | Tonghao&#39;s Blog</title>
         <meta name="description" content="{{meta_description}}">
 
         <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     <meta name="generator" content="Hexo 5.4.0"></head>
     
-		<body class="home-template">
+		<body class="post-template">
 	
 
         <header id="header">
@@ -43,40 +43,41 @@
 
         <main id="content">
         
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2021/How-to-generate-a-CPU-Flame-Graphs-effectively/">How to Generate a CPU-Flame-Graphs effectively</a>
-  
-  
-  </h3>
-</section>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
+<article class="post">
   
-  <span class="separator"> &middot; </span>
-  <a href="/2021/iptables-debugging/">iptables debugging</a>
-  
-  
-  </h3>
-</section>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2021/how-to-configure-a-powerful-openvswitch/">How to Configure A Powerful Open vSwitch</a>
-  
-  
-  </h3>
-</section>
+  <h1 class="post-title">How to Generate a CPU-Flame-Graphs effectively</h1>
+  04-7-2021
+  <section class="post-content article-entry">
+    <h2 id="Profiling-tools"><a href="#Profiling-tools" class="headerlink" title="Profiling tools"></a>Profiling tools</h2><p>Flame graphs can be generated from any profile data that contains stack traces, including from the following profiling tools. For example, on linux os, perf, eBPF, systemtap, and ktap.</p>
+<h2 id="Kernel-Debuginfo"><a href="#Kernel-Debuginfo" class="headerlink" title="Kernel Debuginfo"></a>Kernel Debuginfo</h2><p>Before using the perf to generate the profile data, we MUST install the kernel debuginfo.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh --force kernel-debuginfo-common-x86_64-4.18.0-240.15.1.el8_3.x86_64.rpm</span><br><span class="line">$ rpm -ivh --force kernel-debuginfo-4.18.0-240.15.1.el8_3.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="Flame-Graphs"><a href="#Flame-Graphs" class="headerlink" title="Flame Graphs"></a>Flame Graphs</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ perf record -F 1000 -a -g -p 35197 -- sleep 60</span><br><span class="line">$ perf script -i perf.data | $FLAMEGRAPH_TOOL&#x2F;stackcollapse-perf.pl | $FLAMEGRAPH_TOOL&#x2F;flamegraph.pl &gt; output.svg</span><br></pre></td></tr></table></figure>
+
+<h4 id="With-Debuginfo"><a href="#With-Debuginfo" class="headerlink" title="With Debuginfo:"></a>With Debuginfo:</h4><p><img src="/img/056ab028-d7b2-4556-9285-5b81bcf39616-output.svg" alt="With Debuginfo"></p>
+<h4 id="No-Debuginfo-ixgbe-dbg-root-…"><a href="#No-Debuginfo-ixgbe-dbg-root-…" class="headerlink" title="No Debuginfo: ixgbe_dbg_root …"></a>No Debuginfo: ixgbe_dbg_root …</h4><p><img src="/img/46373902-2d00-4fbf-8b92-e50eedc3fbaa-output.svg" alt="No Debuginfo"></p>
+
+  </section>
+  <footer class="post-footer">
+    <!--
+    <section class="author">
+      <h4>Tonghao Zhang</h4>
+      <p></p>
+    </section>
+    -->
+  </footer>
+</article>
 
 <nav class="pagination" role="pagination">
-  
-  <span class="page-number">page 1 of 1</span>
-  
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2021/iptables-debugging/">
+        <!--iptables debugging--> next →
+    </a>
+    
 </nav>
 
 
