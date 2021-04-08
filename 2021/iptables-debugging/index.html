@@ -47,8 +47,7 @@
 <article class="post">
   
 
-  <h1 class="post-title">iptables debugging</h1>
-  04-5-2021
+  <h1 class="post-title">iptables debugging - 2021-04-5</h1>
   <section class="post-content article-entry">
     <p>Has it ever happened to you that iptables was apparently not working as expected, and, in an effort to find out what’s going on, you littered your ruleset with logging rules all over the place. Now, it turns out that there’s a much more convenient and cleaner way to find out which chains a packet traverses. This is based on using ip{,6}tables’ raw table, with the TRACE target. For the following discussion, it helps if you keep an eye on this excellent iptables flow diagram.<br><img src="/img/nf-packet-flow.png"></p>
 <p>In the diagram, we can see that the raw table has two built-in chains: PREROUTING and OUTPUT, which together cover both the input and output of packets. </p>
