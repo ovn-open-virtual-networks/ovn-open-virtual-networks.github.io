@@ -25,8 +25,8 @@
 html, body {
 	font-size: 1em;
 	line-height: 1.65em;
-	font-family: "Calibri", "STFangsong", Arial,"Microsoft YaHei","微软雅黑","STHeiti", SimSun;
-	font-weight: 300;
+	font-family: "Segoe UI", "Segoe UI light", "Calibri", "微软雅黑", "STHeiti", "STFangsong", "Verdana", serif;
+	font-weight: normal;
 	color:#444;
 }
 
@@ -67,37 +67,38 @@ hr, h4, h5, h6 {
 }
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-	font-family: "Calibri", "STFangsong", "Verdana", "Bree Serif", "Microsoft YaHei", "微软雅黑", serif;
+	font-family: "Segoe UI", "Segoe UI light", "Calibri", "微软雅黑", "STHeiti", "STFangsong", "Verdana", serif;
 	font-weight: 400 !important;
+	line-height: normal;
 }
+
 h1 {
 	font-size: x-large;
-	line-height: normal;
 	margin-top: 0.6em;
 	margin-bottom: 0.6em;
 }
+
 h2 {
 	font-size: x-large;
-	line-height: normal;
 	margin-top: 0.7em;
 	margin-bottom: 0.7em;	
 }
+
 h3 {
 	font-size: large;
-	line-height: normal;
 	margin-top: 0.8em;
 	margin-bottom: 0.8em;	
 }
+
 h4 {
 	font-size: medium;
 }
-h5 {
+
+h5, h6 {
 	font-size: small;
 }
-h6 {
-	font-size: small;
-}
-p {
+
+p, li {
 	font-size: medium;
 	width: 100
 }
@@ -261,7 +262,7 @@ footer a:hover {
 /* Large Screens */
 @media only screen and (min-width: 1281px) {
 	html, body {
-		font-size: 1.1em;
+		font-size: 1.2em;
 	} 
 }
 /* Small Screens */
