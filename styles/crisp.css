@@ -345,6 +345,7 @@ footer a:hover {
 .article-entry .highlight table {
   margin: 0;
   width: auto;
+  font-size: medium;
 }
 .article-entry .highlight td {
   border: none;
