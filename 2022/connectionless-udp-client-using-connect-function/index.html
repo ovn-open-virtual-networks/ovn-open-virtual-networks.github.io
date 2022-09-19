@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+    <head>
+		
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="Hi. I use this site to share and bookmark various things, mostly my work with computers. While I currently work on large scale cloud computing/native performance and networking at Didi chuxing, this site reflects my own opinions and work from over the years.">
+        <link rel="shortcut icon" href="/img/logo.jpeg"/>
+        <link rel="canonical" href="http://guolinn.com/">
+        <link rel="alternate" type="application/rss+xml" title="Tonghao Zhang" href="">
+        <title>Connectionless UDP Client Using &#34;connect&#34; function | Tonghao&#39;s Blog</title>
+        <meta name="description" content="{{meta_description}}">
+
+        <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/styles/crisp.css">
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    
+		<body class="post-template">
+	
+
+        <header id="header">
+            <a id="logo" href="/"><img src="/img/logo.jpeg" alt="Tonghao's Blog" /></a>
+            <h4><a href="/">Tonghao Zhang</a></h4>
+            <p>$ OvS/Linux/DPDK</p>
+            <p>$ xiangxia.m.yue#gmail.com</p>
+            <div id="follow-icons">
+              </div>
+<h4><a href="/about">ABOUT-ME</a></h4>
+
+            <p>Hi. I use this site to share and bookmark various things, mostly my work with computers. While I currently work on large scale cloud computing/native performance and networking at Didi chuxing, this site reflects my own opinions and work from over the years.</p>
+	    <h4><a href="/jobs">工作推荐</a></h4>
+	    <a id="viewmap" target="_blank" rel="noopener" href="https://clustrmaps.com/site/1bgqr" title="Visit"><img src="//www.clustrmaps.com/map_v2.png?d=jzGNclm3ot6CIZ70Mo3puuqt1WGvtxiJJtoEJibONbU&cl=ffffff&t=n&w=400" /></a>
+        </header>
+
+        <main id="content">
+        
+
+<article class="post">
+  
+
+  <h1 class="post-title">Connectionless UDP Client Using "connect" function - 2022-09-19</h1>
+  <section class="post-content article-entry">
+    <h4 id="Connectionless-UDP-Socket"><a href="#Connectionless-UDP-Socket" class="headerlink" title="Connectionless UDP Socket."></a>Connectionless UDP Socket.</h4><blockquote>
+<p>Connectionless sockets do not require any explicit connection setup before sending and receiving data. For a connectionless server, all we need to do is to create a socket and bind it a known port; with that, we can start receiving data. For a client, we do not even have to bother with the bind step, simply create a socket and start sending data!</p>
+</blockquote>
+<blockquote>
+<p>However, a lack of explicit connection means that each time we wish to send data, we now need to specify the address of the remote (receiver) socket. This also means that we can use one socket to send data to multiple sockets. Thus, we can potentially change the address to a new socket endpoint for every send call.</p>
+</blockquote>
+<blockquote>
+<p>Connectionless sockets use UDP (User Datagram Protocol) protocol and are characterized by sockets of type SOCK_DGRAM. Unlike TCP, UDP neither retransmits lost packets nor adjusts its sending-rate. In this regard, UDP is a rather simple protocol. This simplicity is not without its merit! One of the attractive features of UDP is that since it does not need to retransmit lost packets nor does it do any connection setup, sending data incurs less delay. This lower delay makes UDP an appealing choice for delay-sensitive applications like audio and video.</p>
+</blockquote>
+<h4 id="Theory"><a href="#Theory" class="headerlink" title="Theory."></a>Theory.</h4><blockquote>
+<p>In UDP, the client does not form a connection with the server like in TCP and instead just sends a datagram. Similarly, the server need not accept a connection and just waits for datagrams to arrive. Datagrams upon arrival contain the address of the sender which the server uses to send data to the correct client.</p>
+</blockquote>
+<img src="/img/efbd8450-37e3-11ed-aece-c81f66ec33be-udp0.png" height=512/>
+
+<blockquote>
+<p>Call a function called connect() in UDP but it does not result anything like it does in TCP. There is no 3 way handshake. It just checks for any immediate errors and store the peer’s IP address and port number. connect() is storing peers address so no need to pass server address and server address length arguments in sendto().</p>
+</blockquote>
+<img src="/img/f9da29ca-37e3-11ed-a3fd-c81f66ec33be-udp1.png" height=512/>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct proto_ops inet_dgram_ops &#x3D; &#123;</span><br><span class="line">	.bind		&#x3D; inet_bind,</span><br><span class="line">	.connect 	&#x3D; inet_dgram_connect,</span><br><span class="line">	.accept		&#x3D; sock_no_accept,</span><br><span class="line">	.listen		&#x3D; sock_no_listen,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+  </section>
+  <footer class="post-footer">
+    <!--
+    <section class="author">
+      <h4>Tonghao Zhang</h4>
+      <p></p>
+    </section>
+    -->
+  </footer>
+</article>
+
+<nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/linux-lvm2-and-device-mapper-driver/">
+        <!--Linux LVM2 and Device Mapper Driver--> next →
+    </a>
+    
+</nav>
+
+
+        </main>
+        <footer id="footer">
+            <section id="footer-message">&copy; 2022 Tonghao&#39;s Blog</section>
+        </footer>
+    </body>
+</html>
+
+
