@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+    <head>
+		
+        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="Hi. I use this site to share and bookmark various things, mostly my work with computers. While I currently work on large scale cloud computing/native performance and networking at Didi chuxing, this site reflects my own opinions and work from over the years.">
+        <link rel="shortcut icon" href="/img/logo.jpeg"/>
+        <link rel="canonical" href="http://guolinn.com/">
+        <link rel="alternate" type="application/rss+xml" title="Tonghao Zhang" href="">
+        <title>Linux Tracing and Probes, Uprobe | Tonghao&#39;s Blog</title>
+        <meta name="description" content="{{meta_description}}">
+
+        <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/styles/crisp.css">
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    <meta name="generator" content="Hexo 5.4.0"></head>
+    
+		<body class="post-template">
+	
+
+        <header id="header">
+            <a id="logo" href="/"><img src="/img/logo.jpeg" alt="Tonghao's Blog" /></a>
+            <h4><a href="/">Tonghao Zhang</a></h4>
+            <p>$ OvS/Linux/DPDK</p>
+            <p>$ xiangxia.m.yue#gmail.com</p>
+            <div id="follow-icons">
+              </div>
+<h4><a href="/about">ABOUT-ME</a></h4>
+
+            <p>Hi. I use this site to share and bookmark various things, mostly my work with computers. While I currently work on large scale cloud computing/native performance and networking at Didi chuxing, this site reflects my own opinions and work from over the years.</p>
+	    <h4><a href="/jobs">工作推荐</a></h4>
+	    <a id="viewmap" target="_blank" rel="noopener" href="https://clustrmaps.com/site/1bgqr" title="Visit"><img src="//www.clustrmaps.com/map_v2.png?d=jzGNclm3ot6CIZ70Mo3puuqt1WGvtxiJJtoEJibONbU&cl=ffffff&t=n&w=400" /></a>
+        </header>
+
+        <main id="content">
+        
+
+<article class="post">
+  
+
+  <h1 class="post-title">Linux Tracing and Probes, Uprobe - 2022-09-28</h1>
+  <section class="post-content article-entry">
+    <h4 id="Using-TraceFS-https-www-kernel-org-doc-html-latest-trace-uprobetracer-html"><a href="#Using-TraceFS-https-www-kernel-org-doc-html-latest-trace-uprobetracer-html" class="headerlink" title="Using TraceFS https://www.kernel.org/doc/html/latest/trace/uprobetracer.html"></a>Using TraceFS <a target="_blank" rel="noopener" href="https://www.kernel.org/doc/html/latest/trace/uprobetracer.html">https://www.kernel.org/doc/html/latest/trace/uprobetracer.html</a></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -S a.out</span><br><span class="line">0000000000400536 &lt;__xxx_my_trace&gt;:</span><br><span class="line">  400536:	55                   	push   %rbp</span><br><span class="line">  400537:	48 89 e5             	mov    %rsp,%rbp</span><br><span class="line">  40053a:	89 7d fc             	mov    %edi,-0x4(%rbp)</span><br><span class="line">  40053d:	89 75 f8             	mov    %esi,-0x8(%rbp)</span><br><span class="line">  400540:	8b 55 fc             	mov    -0x4(%rbp),%edx</span><br><span class="line">  400543:	8b 45 f8             	mov    -0x8(%rbp),%eax</span><br><span class="line">  400546:	01 d0                	add    %edx,%eax</span><br><span class="line">  400548:	5d                   	pop    %rbp</span><br><span class="line">  400549:	c3                   	retq</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">$ echo &#39;p:x&#x2F;y &#x2F;root&#x2F;a.out:0x536&#39; &gt;&gt; &#x2F;sys&#x2F;kernel&#x2F;debug&#x2F;tracing&#x2F;uprobe_events</span><br><span class="line">$ echo 1 &gt; &#x2F;sys&#x2F;kernel&#x2F;tracing&#x2F;events&#x2F;x&#x2F;y&#x2F;enable</span><br><span class="line">$ perf probe --list</span><br><span class="line">  x:y                  (on __xxx_my_trace in &#x2F;root&#x2F;a.out)</span><br><span class="line">$ cat &#x2F;sys&#x2F;kernel&#x2F;tracing&#x2F;trace_pipe</span><br></pre></td></tr></table></figure>
+
+<h4 id="Using-Perf-tool-https-brendangregg-com-blog-2015-06-28-linux-ftrace-uprobe-html"><a href="#Using-Perf-tool-https-brendangregg-com-blog-2015-06-28-linux-ftrace-uprobe-html" class="headerlink" title="Using Perf tool https://brendangregg.com/blog/2015-06-28/linux-ftrace-uprobe.html"></a>Using Perf tool <a target="_blank" rel="noopener" href="https://brendangregg.com/blog/2015-06-28/linux-ftrace-uprobe.html">https://brendangregg.com/blog/2015-06-28/linux-ftrace-uprobe.html</a></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ perf probe -x &#x2F;bin&#x2F;bash &#39;readline%return +0($retval):string&#39;</span><br><span class="line">$ perf record -e probe_bash:readline -a</span><br><span class="line">$ perf script</span><br><span class="line">$ perf probe --del probe_bash:readline</span><br></pre></td></tr></table></figure>
+
+  </section>
+  <footer class="post-footer">
+    <!--
+    <section class="author">
+      <h4>Tonghao Zhang</h4>
+      <p></p>
+    </section>
+    -->
+  </footer>
+</article>
+
+<nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/connectionless-udp-client-using-connect-function/">
+        <!--Connectionless UDP Client Using "connect" function--> next →
+    </a>
+    
+</nav>
+
+
+        </main>
+        <footer id="footer">
+            <section id="footer-message">&copy; 2022 Tonghao&#39;s Blog</section>
+        </footer>
+    </body>
+</html>
+
+

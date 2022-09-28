@@ -61,7 +61,7 @@
 <h4 id="Theory"><a href="#Theory" class="headerlink" title="Theory."></a>Theory.</h4><blockquote>
 <p>In UDP, the client does not form a connection with the server like in TCP and instead just sends a datagram. Similarly, the server need not accept a connection and just waits for datagrams to arrive. Datagrams upon arrival contain the address of the sender which the server uses to send data to the correct client.</p>
 </blockquote>
-<img src="/img/efbd8450-37e3-11ed-aece-c81f66ec33be-udp0.png" height=512/>
+<img src="/img/efbd8450-37e3-11ed-aece-c81f66ec33be-udp0.png" height=256/>
 
 <blockquote>
 <p>Call a function called connect() in UDP but it does not result anything like it does in TCP. There is no 3 way handshake. It just checks for any immediate errors and store the peer’s IP address and port number. connect() is storing peers address so no need to pass server address and server address length arguments in sendto().</p>
@@ -82,6 +82,10 @@
 </article>
 
 <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2022/linux-kernel-tracing-and-probes-uprobe/">
+        ← prev <!--Linux Tracing and Probes, Uprobe-->
+    </a>
     
     <span class="page-number">•</span>
     
