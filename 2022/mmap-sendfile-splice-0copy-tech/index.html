@@ -8,7 +8,7 @@
         <link rel="shortcut icon" href="/img/logo.jpeg"/>
         <link rel="canonical" href="http://guolinn.com/">
         <link rel="alternate" type="application/rss+xml" title="Tonghao Zhang" href="">
-        <title>Archives | Tonghao&#39;s Blog</title>
+        <title>mmap/sendfile/splice 零拷贝技术 | Tonghao&#39;s Blog</title>
         <meta name="description" content="{{meta_description}}">
 
         <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     <meta name="generator" content="Hexo 5.4.0"></head>
     
-		<body class="home-template">
+		<body class="post-template">
 	
 
         <header id="header">
@@ -43,80 +43,44 @@
 
         <main id="content">
         
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2022/mmap-sendfile-splice-0copy-tech/">mmap/sendfile/splice 零拷贝技术</a>
-  
-  
-  </h3>
-</section>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
+<article class="post">
   
-  <span class="separator"> &middot; </span>
-  <a href="/2022/linux-kernel-tracing-and-probes-uprobe/">Linux Tracing and Probes, Uprobe</a>
-  
-  
-  </h3>
-</section>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2022/connectionless-udp-client-using-connect-function/">Connectionless UDP Client Using "connect" function</a>
-  
-  
-  </h3>
-</section>
+  <h1 class="post-title">mmap/sendfile/splice 零拷贝技术 - 2022-10-10</h1>
+  <section class="post-content article-entry">
+    <h3 id="传统IO"><a href="#传统IO" class="headerlink" title="传统IO"></a>传统IO</h3><img src="/img/940150cc-4a00-11ed-831c-c81f66ec33be-write.png" height=400/>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2022/linux-lvm2-and-device-mapper-driver/">Linux LVM2 and Device Mapper Driver</a>
-  
-  
-  </h3>
-</section>
+<h3 id="mmap-write"><a href="#mmap-write" class="headerlink" title="mmap+write"></a>mmap+write</h3><img src="/img/c52b8cbc-4a00-11ed-81e0-c81f66ec33be-mmap.png" height=400/>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2021/how-to-generate-a-cpu-flame-graphs-effectively/">How to Generate a CPU-Flame-Graphs effectively</a>
-  
-  
-  </h3>
-</section>
+<h3 id="sendfile"><a href="#sendfile" class="headerlink" title="sendfile"></a>sendfile</h3><img src="/img/e88a2506-4a00-11ed-b940-c81f66ec33be-sendfile.png" height=400/>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2021/iptables-debugging/">iptables debugging</a>
-  
-  
-  </h3>
-</section>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><blockquote>
+<p>RocketMQ/Kafka 都使用到了零拷贝技术</p>
+</blockquote>
+<h3 id="内核实现"><a href="#内核实现" class="headerlink" title="内核实现"></a>内核实现</h3><blockquote>
+<p>待更新</p>
+</blockquote>
 
-<section id="{{id}}" class="{{post_class}}">
-  <h3 class="post-title">
-  
-  <span class="separator"> &middot; </span>
-  <a href="/2021/how-to-configure-a-powerful-openvswitch/">How to Configure A Powerful Open vSwitch</a>
-  
-  
-  </h3>
-</section>
+  </section>
+  <footer class="post-footer">
+    <!--
+    <section class="author">
+      <h4>Tonghao Zhang</h4>
+      <p></p>
+    </section>
+    -->
+  </footer>
+</article>
 
 <nav class="pagination" role="pagination">
-  
-  <span class="page-number">page 1 of 1</span>
-  
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2022/linux-kernel-tracing-and-probes-uprobe/">
+        <!--Linux Tracing and Probes, Uprobe--> next →
+    </a>
+    
 </nav>
 
 
