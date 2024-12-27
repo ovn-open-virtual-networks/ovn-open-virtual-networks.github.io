@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en-us"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="简介
+本文主要结合 OpenAI 此次故障和作者工作经验编写。
+OpenAI Incidents https://status.openai.com/incidents/ctrsv3lwd797 详细记录了 2024 年 12 月 11 日发生的一次故障，当时所有 OpenAI 服务均出现了严重的停机问题。故障的触发源于部署了新的遥测服务（telemetry service），意外导致 Kubernetes 控制平面负载过重，从而引发关键系统的连锁故障。
+
+This post-mortem details an incident that occurred on December 11, 2024, where all OpenAI services experienced significant downtime. The issue stemmed from a new telemetry service deployment that unintentionally overwhelmed the Kubernetes control plane, causing cascading failures across critical systems. In this post, we break down the root cause, outline the steps taken for remediation, and share the measures we are implementing to prevent similar incidents in the future.">  
+
+  <title>
+    
+      2024-12-11 OpenAI Kubernetes 故障解析复盘
+    
+  </title>
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.18e297f9c7b534b566a0a070712181cc69b4f1155e1b8d1fe541304605c4f6ab7d7460a557a004bf67fd09787aef348cf619f6dd8d310362898a41b1465ddd4d.css" integrity="sha512-GOKX&#43;ce1NLVmoKBwcSGBzGm08RVeG40f5UEwRgXE9qt9dGClV6AEv2f9CXh67zSM9hn23Y0xA2KJikGxRl3dTQ==" />
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+                <div class="post-meta">
+                    <a href="/">..</a>
+
+                    <p>
+                        <time datetime="2024-12-20 23:22:53 -0500 EST">
+                            2024-12-20
+                        </time>
+                    </p>
+                </div>
+
+<article>
+    <h1>2024-12-11 OpenAI Kubernetes 故障解析复盘</h1>
+
+    
+        <aside  class="toc" >
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#简介">简介</a></li>
+    <li><a href="#影响">影响</a></li>
+    <li><a href="#根因">根因</a></li>
+    <li><a href="#测试与部署">测试与部署</a></li>
+    <li><a href="#故障修复">故障修复</a></li>
+    <li><a href="#预防措施">预防措施</a></li>
+  </ul>
+</nav>
+        </aside>
+    
+
+    <h2 id="简介">简介</h2>
+<p><em>本文主要结合 OpenAI 此次故障和作者工作经验编写。</em><br>
+<a href="https://status.openai.com/incidents/ctrsv3lwd797">OpenAI Incidents https://status.openai.com/incidents/ctrsv3lwd797</a> 详细记录了 2024 年 12 月 11 日发生的一次故障，当时所有 OpenAI 服务均出现了严重的停机问题。故障的触发源于部署了新的遥测服务（telemetry service），意外导致 Kubernetes 控制平面负载过重，从而引发关键系统的连锁故障。</p>
+<blockquote>
+<p>This post-mortem details an incident that occurred on December 11, 2024, where all OpenAI services experienced significant downtime. The issue stemmed from a new telemetry service deployment that unintentionally overwhelmed the Kubernetes control plane, causing cascading failures across critical systems. In this post, we break down the root cause, outline the steps taken for remediation, and share the measures we are implementing to prevent similar incidents in the future.</p>
+</blockquote>
+<h2 id="影响">影响</h2>
+<p>2024年12月11日 下午 3:16-7:38 之间，所有 OpenAI 服务均出现了严重降级或完全不可用。这起事故源于开发人员在所有集群中推出的新遥测服务配置，并非由安全漏洞或近期产品发布所致。</p>
+<h2 id="根因">根因</h2>
+<p>OpenAI 在全球范围内运营着数百个 Kubernetes 集群。Kubernetes 的控制平面主要负责集群管理，而数据平面则实际运行工作负载（如模型推理服务）。为提升组织整体可靠性，我们一直在加强集群级别的可观测性工具，以加深对系统运行状态的可见度。太平洋时间下午 3:12，OpenAI 在所有集群部署了一项新的遥测服务，用于收集 Kubernetes 控制平面的详细指标。由于遥测服务会涉及非常广泛的操作范围，这项新服务的配置无意间让每个集群中的所有节点都执行了高成本的 Kubernetes API 操作，并且该操作成本会随着集群规模的扩大而成倍增加。数千个节点同时发起这些高负载请求，导致 Kubernetes API 服务器不堪重负，进而瘫痪了大型集群的控制平面。该问题在规模最大的集群中最为严重，因此在测试环境并未检测到；另一方面，DNS 缓存也使问题在正式环境中的可见度降低，直到问题在整个集群开始全面扩散后才逐渐显现。尽管 Kubernetes 数据平面大部分情况下可独立于控制平面运行，但数据平面的 DNS 解析依赖控制平面——如果控制平面瘫痪，服务之间便无法通过 DNS 相互通信。简而言之，新遥测服务的配置在大型集群中意外地生成了巨大的 Kubernetes API 负载，导致控制平面瘫痪，进而使 DNS 服务发现功能中断。</p>
+<blockquote>
+<ol>
+<li>
+<p>At 3:12 PM PST, we deployed a new telemetry service to collect detailed Kubernetes control plane metrics.</p>
+</li>
+<li>
+<p>Telemetry services have a very wide footprint, so this new service’s configuration unintentionally caused every node in each cluster to execute resource-intensive Kubernetes API operations whose cost scaled with the size of the cluster. With thousands of nodes performing these operations simultaneously, the Kubernetes API servers became overwhelmed, taking down the Kubernetes control plane in most of our large clusters. This issue was most pronounced in our largest clusters, so our testing didn’t catch it – and DNS caching made the issue far less visible until the rollouts had begun fleet-wide.</p>
+</li>
+<li>
+<p>The Kubernetes data plane can operate largely independently of the control plane, but DNS relies on the control plane – services don’t know how to contact one another without the Kubernetes control plane.</p>
+</li>
+<li>
+<p>In short, the root cause was a new telemetry service configuration that unexpectedly generated massive Kubernetes API load across large clusters, overwhelming the control plane and breaking DNS-based service discovery.</p>
+</li>
+</ol>
+</blockquote>
+<h2 id="测试与部署">测试与部署</h2>
+<p>我们在预发布（staging）集群中对变更进行了测试，并未发现任何问题。该故障主要对超过一定规模的集群产生影响；再加上每个节点的 DNS 缓存延迟了故障的可见时间，使得变更在正式环境被大范围部署之前并没有暴露出任何明显异常。此次变更的监控流程主要关注了服务自身的健康状态，并没有完善地监控集群健康（尤其是控制平面的健康）。Kubernetes 数据平面设计上可以在控制平面离线的情况下继续工作。然而，Kubernetes API 服务器对于 DNS 解析至关重要，而 DNS 解析对于许多服务都是核心依赖。DNS 缓存在故障早期阶段起到了暂时的缓冲作用，使得一些陈旧但可用的 DNS 记录得以继续为服务提供地址解析。但在接下来 20 分钟里，这些缓存逐步过期，依赖实时 DNS 的服务开始出现故障。一旦 DNS 缓存失效，集群里的所有服务都会向 DNS 发起新请求，进一步加剧了控制平面的负载，使得故障难以在短期内得到缓解。</p>
+<blockquote>
+<p>The Kubernetes data plane (responsible for handling user requests) is designed to operate independently of the control plane. However, the Kubernetes API server is required for DNS resolution, which is a critical dependency for many of our services.</p>
+</blockquote>
+<h2 id="故障修复">故障修复</h2>
+<p>通常情况下，监控变更过程中的服务状态和回退有问题的变更操作，一般都是相对容易的。在该故障中，我们的监控工具是正常工作的 - 在客户发现该问题前，发出了报警。不过要真正修复这个问题，需要先删除导致问题的遥测服务，而这需要访问 Kubernetes 控制平面。然而，API 服务器在承受巨大负载的情况下无法正常处理管理操作，导致我们无法第一时间移除故障性服务。我们在几分钟内确认了问题，并立即启动多个工作流程，尝试不同途径迅速恢复集群：</p>
+<ol>
+<li><strong>缩小集群规模</strong>：<em>通过减少节点数量来降低 Kubernetes API 总负载。</em></li>
+<li><strong>阻断对 Kubernetes admin API 的网络访问</strong>：<em>阻止新的高负载请求，让 Kubernetes API 服务器有时间恢复。</em></li>
+<li><strong>扩容 Kubernetes API 服务器</strong>：<em>提升可用资源以处理积压的请求，从而为移除故障服务赢得操作窗口。</em></li>
+</ol>
+<blockquote>
+<ol>
+<li>Scaling down cluster size: Reduced the aggregate Kubernetes API load.</li>
+<li>Blocking network access to Kubernetes admin APIs: Prevented new expensive requests, giving the API servers time to recover.</li>
+<li>Scaling up Kubernetes API servers: Increased available resources to handle pending requests, allowing us to apply the fix.</li>
+</ol>
+</blockquote>
+<p>另外，此次事故是多项系统与流程在同一时间点相互作用、同时失效的结果，主要体现在：</p>
+<ul>
+<li>测试环境未能捕捉到新配置对 Kubernetes 控制平面的影响。</li>
+<li>DNS 缓存使服务故障出现了时间延迟，从而让变更在故障完全暴露前被大范围部署。</li>
+<li>故障发生时无法访问控制平面，导致修复过程十分缓慢。</li>
+</ul>
+<h2 id="预防措施">预防措施</h2>
+<ol>
+<li><strong>阶段部署</strong> 我们将继续加强基础设施变更的分阶段部署和监控机制，确保任何故障都能被迅速发现并限制在较小范围。今后所有与基础设施相关的配置变更都会采用更全面的分阶段部署流程，并在部署过程中持续监控服务工作负载以及 Kubernetes 控制平面的健康状态。</li>
+</ol>
+<blockquote>
+<p>We&rsquo;re continuing our work on improved phased rollouts with better monitoring for all infrastructure changes to ensure that any failure has limited impact and is detected early. All infrastructure-related configuration changes moving forward will follow a robust phased rollout process, with improved continuous monitoring that ensures that both the service workloads and the clusters (including the Kubernetes control plane) are healthy.</p>
+</blockquote>
+<ol start="2">
+<li><strong>故障注入</strong> Kubernetes 数据平面需要进一步增强在缺失控制平面的情况下的生存能力。我们将引入针对该场景的测试手段，包括在测试环境有意注入“错误配置”来验证系统检测和回滚能力。</li>
+</ol>
+<blockquote>
+<p>The Kubernetes data plane should be able to survive without the control plane for longer, and we’ll run tests that explicitly exercise this scenario. We’ll also run tests to intentionally roll out bad changes to ensure that our systems detect and roll back appropriately.</p>
+</blockquote>
+<ol start="3">
+<li>
+<p><strong>紧急访问</strong> 需要提供一套应急机制，确保在控制面高负载时，工程师依旧能够访问 API 服务器或者某些关键服务的请求优先被处理。</p>
+</li>
+<li>
+<p><strong>解耦数据和控制平面</strong> 容器服务对 Kubernetes DNS 服务的依赖，使得数据平面和控制平面存在耦合关系。解耦数据面和控制面势在必行，确保任何一方出现问题均不会对其他平面产生影响。</p>
+</li>
+</ol>
+<blockquote>
+<p>Our dependency on Kubernetes DNS for service discovery creates a link between our Kubernetes data plane and control plane. We are investing in systems to decouple the Kubernetes data plane from the control plane so that the control plane is not load bearing for processing mission critical services and product workloads.</p>
+</blockquote>
+<ol start="5">
+<li>
+<p><strong>循环依赖</strong> OpenAI 此次故障恢复过程，产生了循环依赖问题。DNS 服务的恢复依赖Kubernetes 控制面的正常访问。Kubernetes 控制面服务的恢复依赖DNS 恢复正常或者减轻对API 服务器的访问。循环依赖会严重阻碍故障恢复过程，因此建议基础服务如DNS, RDS, KV 服务，监控等，不要容器化部署。</p>
+</li>
+<li>
+<p><strong>快速恢复</strong> 处理Kubernetes 控制面故障，两个核心手段:</p>
+<ol>
+<li>针对API 服务限流，降级: 对部分网络访问进行限制，避免API服务器过载，先逐步的恢复一些服务。</li>
+<li>快速扩容API 服务器: 通常情况系统故障期间的负载要远比正常状态的负载高很多，因此需要一种快速的扩容机制，提供足够的机器资源抵挡负载洪峰。因此针对集群启动所需的关键资源引入更完善的缓存(冷备机器)和动态限流机制，并定期进行“快速替换整个集群”的演练，以确保在最短时间内实现正确、完整的启动和恢复。</li>
+</ol>
+</li>
+</ol>
+<blockquote>
+<p>We’ll implement improved caching and dynamic rate limiters for the resources that are necessary for cluster startup and run regular exercises where we rapidly replace an entire cluster with an explicit goal of fast and correct startup.</p>
+</blockquote>
+<ol start="7">
+<li>
+<p><strong>风险梳理</strong> 在实际生产环境中存在各种服务通过client-go 访问Kubernetes API 服务器，而这些服务非预期变更均有可能导致控制面故障，因此需要针对这些服务进行风险梳理，控制。</p>
+</li>
+<li>
+<p><strong>容量评估</strong> Kubernetes 控制面能够支撑多少节点服务器，其容量极限在哪，需要探底。</p>
+</li>
+</ol>
+
+</article>
+
+            </div>
+        </main>
+    </body></html>
