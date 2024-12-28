@@ -48,6 +48,15 @@
 原因分析：ECS管控系统为B、C可用区双机房容灾，C可用区故障后由B可用区对外提供服务，由于大量可用区C的客户在香港其他可用区新购实例，同时可用区C的ECS实例拉起恢复动作引入的流量，导致可用区 B 管控服务资源不足。新扩容的ECS管控系统启动时依赖的中间件服务部署在可用区C机房，导致较长时间内无法扩容。ECS管控依赖的自定义镜像数据服务，依赖可用区C的单AZ冗余版本的OSS服务，导致客户新购实例后出现启动失败的现象。
 改进措施：全网巡检，整体优化多AZ产品高可用设计，避免出现依赖OSS单AZ和中间件单AZ的问题。加强阿里云管控平面的容灾演练，进一步提升云产品高可用容灾逃逸能力。
 
+
+补充
+
+阿里云地域和可用区概念:
+
+地域 地域指数据中心所在的地理区域，通常按照数据中心所在的城市划分。例如，华北2（北京）地域表示数据中心所在的城市是北京。
+可用区 可用区是指在同一地域内，电力和网络互相独立的物理区域。例如，华北2（北京）地域支持12个可用区，包括北京 可用区A和北京 可用区B等。同一可用区内实例之间的网络延时更小，其用户访问速度更快。在同一地域内，可用区与可用区之间内网互通。各可用区之间可以实现故障隔离，即如果一个可用区出现故障，则不会影响其他可用区的正常运行。是否将实例放在同一可用区内，主要取决于您的应用对容灾能力和网络延时的要求。
+
+
 ">  
 
   <title>
@@ -61,7 +70,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/main.236b16ba4684fc5e57068c7e1f5e5e9e39f4c020ef112211f513239629a178eaf17522fce9a1ded3aa072e6a29ce6d433fceb359983c7d8d185ed13fcb3f4cee.css" integrity="sha512-I2sWukaE/F5XBox&#43;H15enjn0wCDvESIR9RMjlimheOrxdSL86aHe06oHLmopzm1DP86zWZg8fY0YXtE/yz9M7g==" />
+  <link rel="stylesheet" href="/css/main.74db8fbcf2d4f5e7d54edd799e90f36418a556a9de88977004234a1f6b353f20befa793fb166ec6f357fa4652913c0df0568a637c7f2a2e6ed7921f56fc3c176.css" integrity="sha512-dNuPvPLU9efVTt15npDzZBilVqneiJdwBCNKH2s1PyC&#43;&#43;nk/sWbsbzV/pGUpE8DfBWimN8fyoubteSH1b8PBdg==" />
   
 </head>
 <body a="auto">
@@ -89,6 +98,7 @@
     <li><a href="#根因">根因</a></li>
     <li><a href="#故障修复">故障修复</a></li>
     <li><a href="#预防措施">预防措施</a></li>
+    <li><a href="#补充">补充</a></li>
   </ul>
 </nav>
         </aside>
@@ -140,6 +150,15 @@
 <li><strong>改进措施</strong>：全网巡检，整体优化多AZ产品高可用设计，避免出现依赖OSS单AZ和中间件单AZ的问题。加强阿里云管控平面的容灾演练，进一步提升云产品高可用容灾逃逸能力。</li>
 </ol>
 </blockquote>
+<h2 id="补充">补充</h2>
+<blockquote>
+<p><a href="https://help.aliyun.com/document_detail/40654.html">阿里云地域和可用区概念</a>:</p>
+<ol>
+<li><strong>地域</strong> 地域指数据中心所在的地理区域，通常按照数据中心所在的城市划分。例如，华北2（北京）地域表示数据中心所在的城市是北京。</li>
+<li><strong>可用区</strong> 可用区是指在同一地域内，电力和网络互相独立的物理区域。例如，华北2（北京）地域支持12个可用区，包括北京 可用区A和北京 可用区B等。同一可用区内实例之间的网络延时更小，其用户访问速度更快。在同一地域内，可用区与可用区之间内网互通。各可用区之间可以实现故障隔离，即如果一个可用区出现故障，则不会影响其他可用区的正常运行。是否将实例放在同一可用区内，主要取决于您的应用对容灾能力和网络延时的要求。</li>
+</ol>
+</blockquote>
+<p><img src="/alibaba-region-az.png" alt=""></p>
 
 </article>
 
