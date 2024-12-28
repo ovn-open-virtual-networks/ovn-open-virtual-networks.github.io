@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Bamai Cloud/AI Infra Status</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 Apr 2024 22:52:57 -0500</lastBuildDate>
+    <lastBuildDate>Fri, 20 Dec 2024 23:22:53 -0500</lastBuildDate>
     <atom:link href="https://blog.bamaicloud.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2024-12-11 OpenAI Kubernetes 故障解析复盘</title>
+      <link>https://blog.bamaicloud.com/posts/2024-12-11-openai-kubernetes/</link>
+      <pubDate>Fri, 20 Dec 2024 23:22:53 -0500</pubDate>
+      <guid>https://blog.bamaicloud.com/posts/2024-12-11-openai-kubernetes/</guid>
+      <description>&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;&#xA;&lt;p&gt;&lt;em&gt;本文主要结合 OpenAI 此次故障和作者工作经验编写。&lt;/em&gt;&lt;br&gt;&#xA;&lt;a href=&#34;https://status.openai.com/incidents/ctrsv3lwd797&#34;&gt;OpenAI Incidents https://status.openai.com/incidents/ctrsv3lwd797&lt;/a&gt; 详细记录了 2024 年 12 月 11 日发生的一次故障，当时所有 OpenAI 服务均出现了严重的停机问题。故障的触发源于部署了新的遥测服务（telemetry service），意外导致 Kubernetes 控制平面负载过重，从而引发关键系统的连锁故障。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;This post-mortem details an incident that occurred on December 11, 2024, where all OpenAI services experienced significant downtime. The issue stemmed from a new telemetry service deployment that unintentionally overwhelmed the Kubernetes control plane, causing cascading failures across critical systems. In this post, we break down the root cause, outline the steps taken for remediation, and share the measures we are implementing to prevent similar incidents in the future.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>2024-04-08 腾讯云API服务故障解析复盘</title>
       <link>https://blog.bamaicloud.com/posts/2024-04-08-tencent-cloud-api-incident/</link>
