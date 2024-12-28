@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Bamai Cloud/AI Infra Status</title>
-    <link>http://localhost:1313/</link>
+    <link>https://blog.bamaicloud.com/</link>
     <description>Recent content on Bamai Cloud/AI Infra Status</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 20 Dec 2024 23:22:53 -0500</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 Apr 2024 22:52:57 -0500</lastBuildDate>
+    <atom:link href="https://blog.bamaicloud.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>2024-12-11 OpenAI Kubernetes 故障解析复盘</title>
-      <link>http://localhost:1313/posts/2024-12-11-openai-kubernetes/</link>
-      <pubDate>Fri, 20 Dec 2024 23:22:53 -0500</pubDate>
-      <guid>http://localhost:1313/posts/2024-12-11-openai-kubernetes/</guid>
-      <description>&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;&#xA;&lt;p&gt;&lt;em&gt;本文主要结合 OpenAI 此次故障和作者工作经验编写。&lt;/em&gt;&lt;br&gt;&#xA;&lt;a href=&#34;https://status.openai.com/incidents/ctrsv3lwd797&#34;&gt;OpenAI Incidents https://status.openai.com/incidents/ctrsv3lwd797&lt;/a&gt; 详细记录了 2024 年 12 月 11 日发生的一次故障，当时所有 OpenAI 服务均出现了严重的停机问题。故障的触发源于部署了新的遥测服务（telemetry service），意外导致 Kubernetes 控制平面负载过重，从而引发关键系统的连锁故障。&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;This post-mortem details an incident that occurred on December 11, 2024, where all OpenAI services experienced significant downtime. The issue stemmed from a new telemetry service deployment that unintentionally overwhelmed the Kubernetes control plane, causing cascading failures across critical systems. In this post, we break down the root cause, outline the steps taken for remediation, and share the measures we are implementing to prevent similar incidents in the future.&lt;/p&gt;</description>
+      <title>2024-04-08 腾讯云API服务故障解析复盘</title>
+      <link>https://blog.bamaicloud.com/posts/2024-04-08-tencent-cloud-api-incident/</link>
+      <pubDate>Mon, 15 Apr 2024 22:52:57 -0500</pubDate>
+      <guid>https://blog.bamaicloud.com/posts/2024-04-08-tencent-cloud-api-incident/</guid>
+      <description>&lt;h2 id=&#34;简介&#34;&gt;简介&lt;/h2&gt;&#xA;&lt;p&gt;2024年04月08日15:23，腾讯云团队收到监控告警，出现大面积登录不了腾讯云控制台故障。&lt;a href=&#34;https://cloud.tencent.com/developer/article/2408984&#34;&gt;腾讯云4月8日故障复盘及情况说明&lt;/a&gt;&lt;/p&gt;&#xA;&lt;h2 id=&#34;影响&#34;&gt;影响&lt;/h2&gt;&#xA;&lt;p&gt;依赖云API服务的部分公有云服务无法使用，比如云函数、文字识别、微服务平台、音频内容安全、验证码等。此次故障一共持续了近87分钟，期间共有1957个客户报障。&lt;/p&gt;&#xA;&lt;h2 id=&#34;根因&#34;&gt;根因&lt;/h2&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;本次API升级过程中，由于新版本的接口协议发生了变化，在后台发布新版本之后对于旧版本前端传来的数据处理逻辑异常，导致生成了一条错误的配置数据，由于灰度机制不足导致异常数据快速扩散到了全网地域，造成整体API使用异常。&lt;/li&gt;&#xA;&lt;li&gt;发生故障后，按照标准回滚方案将服务后台和配置数据同时回滚到旧版本，并重启API后台服务，但此时因为承载API服务的容器平台也依赖API服务才能提供调度能力，即发生了循环依赖，导致服务无法自动拉起。通过运维手工启动方式才使API服务重启，完成整个故障恢复。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;故障修复&#34;&gt;故障修复&lt;/h2&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;15:23 监测到故障，立即执行服务的恢复，同时进行原因的排查；&lt;br&gt;&#xA;15:47 发现通过回滚版本没能完全恢复服务，进一步定位问题；&lt;br&gt;&#xA;15:57 定位出故障根因是配置数据出现错误，紧急设计数据修复方案；&lt;br&gt;&#xA;16:02 对全地域进行数据修复工作，API服务逐地域恢复中；&lt;br&gt;&#xA;16:05 观测到除上海外的地域API服务均已恢复，进一步定位上海地域的恢复问题；&lt;br&gt;&#xA;16:25 定位到上海的技术组件存在API循环依赖问题，决定通过流量调度至其他地域来恢复；&lt;br&gt;&#xA;16:45 观测到上海地域恢复了，此时API和依赖API的PaaS服务彻底恢复，但控制台流量剧增，按九倍容量进行了扩容；&lt;br&gt;&#xA;16:50 请求量逐渐恢复到正常水平，业务稳定运行，控制台服务全部恢复；&lt;br&gt;&#xA;17:45 持续观察一小时，未发现问题，按预案处理过程完毕。&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;h2 id=&#34;预防措施&#34;&gt;预防措施&lt;/h2&gt;&#xA;&lt;p&gt;&lt;em&gt;官方虽然给出了后续的改进措施，但根据作者的一些理解，改进还远远不够。下面是作者的一些思索：&lt;/em&gt;&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;灰度，监控&lt;/li&gt;&#xA;&lt;li&gt;循环依赖&lt;/li&gt;&#xA;&lt;li&gt;架构一致性&lt;/li&gt;&#xA;&lt;li&gt;API 前后兼容性&lt;/li&gt;&#xA;&lt;/ol&gt;</description>
     </item>
   </channel>
 </rss>

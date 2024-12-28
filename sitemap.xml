@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/2024-12-11-openai-kubernetes/</loc>
+    <loc>https://blog.bamaicloud.com/posts/</loc>
     <lastmod>2024-12-20T23:22:53-05:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2024-12-20T23:22:53-05:00</lastmod>
+    <loc>https://blog.bamaicloud.com/posts/2024-04-08-tencent-cloud-api-incident/</loc>
+    <lastmod>2024-04-15T22:52:57-05:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://blog.bamaicloud.com/</loc>
     <lastmod>2022-08-25T21:30:04+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://blog.bamaicloud.com/categories/</loc>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://blog.bamaicloud.com/tags/</loc>
   </url>
 </urlset>
