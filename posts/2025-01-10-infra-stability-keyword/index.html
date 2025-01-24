@@ -3,112 +3,19 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-   <meta name="description" content="核心监控
-
-系统指标是评价系统健康程度的重要标准；指标可以分为：功能指标，性能指标等
-
-
-
-指标
-
-异常指标：最直观体现系统健康状态，功能状态；异常指标监控（不可用，重启，panic等），必要错误日志。
-性能指标：反应系统压力状态，性能表现；具体指标如响应时间、吞吐量、并发性、可扩展性、容错能力、安全性。
-可靠性指标：反映了软件的稳定性和可靠性，包括软件的错误率、崩溃率、失效率等。
-资源利用率：包括 CPU 利用率、内存利用率、磁盘利用率等，反映了软件使用系统资源的效率。
+   <meta name="description" content="可用性
+可用性（又称为服务可用性），是指工作负载可供使用的时间百分比，时间单位可以为月，年，三年等。计算公式如下:
+可用性 = 系统正常运行时间 / (系统正常运行时间 &#43; 系统计划外停机时间)
+可以通过平均故障间隔时间（MTBF）和平均恢复时间（MTTR）计算：
+可用性 = 平均故障间隔时间 / (平均故障间隔时间 &#43; 平均恢复时间)
 
 
-
-感知
-
-监控：反应基础服务总体情况，根据总体情况可以快速定位到局部问题，因此大盘集群维度监控必不可少。
-告警：需要对告警进行分级，核心重要报警必须及时处理止损，避免线上问题扩延；提供告警升级机制，如大批量低优先级的告警自动升级到高优先级。
-值班：oncall 不仅仅是SRE的职责，也是研发同学必备的工作；轮流值班能确保对线上问题被处理，具体形式可以分为主备。
-
-
-
-
-预案是止损的重要核心手段，定位到对应故障后应执行对应预案，如果手忙脚乱现场止损往往很可能浪费了很多宝贵时间，且没有达到预期效果，甚至导致二次故障。
-
-
-预案
-
-SOP预案: 针对可能的故障场景，需要从不同的维度思考，提前准备好止损预案。
-故障自愈: 更一步可以将预案作为自愈执行，实现故障的自愈。
-故障注入: 因为系统软件功能都是在不断迭代更新，故障预案在日常工作中很容易被忽略或者逐渐失效腐化。为保障预案的有效性，可通过放火平台进行验证。
-
-
-止损
-
-先止损: 降级，限流，熔断，恢复
-排查潜在风险
-短期解决方案
-长期解决方案
-
-
-
-故障分类
-
-线上变更：故障绝大部分是由于变更导致的；因此线上必须遵循变更军规，必须有审批，灰度，回滚等
-配置问题：超时、阈值设置不合理，环境变量错误
-代码编写：代码逻辑问题，或者第三方库，场景思考不全面，代码性能
-系统设计：系统间循环依赖，服务雪崩，流量突增（运营活动流量，高峰流量，攻击流量），可扩张性差
-系统过载：CPU，内存，磁盘，线程池，连接池等资源不足
-自然故障：路由器，网线等网络问题，服务器宕机，第三方服务故障，机房不可用
-容量评估
-
-系统设计
-
-方案评审
-
-评审原则，不同方案对比，最终方案优劣势。行业最佳实践
-资源占用，限制手段
-周边依赖
-故障处理
-
-系统异常
-流量突增
-降级
-限流
-熔断
-
-
-
-
-代码评审
-
-CI
-CR
-
-
-软件测试
-
-单元
-集成
-冒烟
-回归
-性能
-压力
-稳定性
-金丝雀发布
-
-
-上线流程
-
-军规
-
-
-过载保护
-强健的系统需要优雅地处理过载情况。过载保护主要是为了提升用户体验，保障服务质量，在发生突发流量时仍然能够提供一部分服务能力，而不是整个系统瘫痪。过载保护策略优先级，降级，限流，扩容，切流。其次评估系统容量，提前扩容以及事中快速自动化扩容、多活切流都是解决系统过载的方法。
-
-日常机制
-
-复盘机制：对出过的线上事故一定要及时的进行复盘，通过复盘来发现我们现有流程、机制、潜在风险是否有问题。复盘虽属于事后行为，但很重要，我们需要通过复盘来看下次是否能预防此故障，或者是否能更快的定位和止损。
-稳定性周会、稳定性月会：我们通过各种定期的会议来总结一些阶段性进展和成果，拉齐大家认知，这也是大伙日常稳定性工作露出的一个机会，所以非常重要。
-">  
+Availability (also known as service availability) is the percentage of time that a workload is available for use. Available for use means that it performs its agreed function successfully when required.
+Availability = Available for Use Time/Total Time. An availability estimate can be established by Mean Time Between Failure (MTBF) and Mean Time to Recover (MTTR): Availability = MTBF/(MTBF &#43; MTTR)">  
 
   <title>
     
-      2025-01-10 基础设施稳定性建设概要
+      2025-01-10 基础设施可用性建设概要
     
   </title>
 
@@ -134,11 +41,45 @@ CR
                 </div>
 
 <article>
-    <h1>2025-01-10 基础设施稳定性建设概要</h1>
+    <h1>2025-01-10 基础设施可用性建设概要</h1>
 
     
+        <aside  class="toc" >
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#可用性">可用性</a></li>
+    <li><a href="#核心监控">核心监控</a></li>
+    <li><a href="#oncall">ONCALL</a></li>
+    <li><a href="#故障分类">故障分类</a></li>
+    <li><a href="#变更原则">变更原则</a></li>
+    <li><a href="#复盘机制">复盘机制</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+        </aside>
+    
 
-    <h2 id="核心监控">核心监控</h2>
+    <h2 id="可用性">可用性</h2>
+<p>可用性（又称为服务可用性），是指工作负载可供使用的时间百分比，时间单位可以为月，年，三年等。计算公式如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>可用性 <span style="color:#f92672">=</span> 系统正常运行时间 / <span style="color:#f92672">(</span>系统正常运行时间 + 系统计划外停机时间<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>可以通过平均故障间隔时间（MTBF）和平均恢复时间（MTTR）计算：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>可用性 <span style="color:#f92672">=</span> 平均故障间隔时间 / <span style="color:#f92672">(</span>平均故障间隔时间 + 平均恢复时间<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p><img src="/2025-01-17-availability-table.jpeg" alt=""></p>
+<blockquote>
+<p>Availability (also known as service availability) is the percentage of time that a workload is available for use. Available for use means that it performs its agreed function successfully when required.
+<strong>Availability = Available for Use Time/Total Time</strong>. An availability estimate can be established by Mean Time Between Failure (MTBF) and Mean Time to Recover (MTTR): <strong>Availability = MTBF/(MTBF + MTTR)</strong></p>
+</blockquote>
+<p><strong>根据请求测量可用性</strong>：与计划外停机时间相对应的是计划内停机时间，如通知用户服务升级，计划停机10分钟，那么这10分钟就是计划内停机时间。互联公司很多服务都是分布式的，尤其是 Google，通常一个服务不会完全不可用，而是其中某个 region 不可用，此时这个计划外停机时间就不容易计算了。因此可以根据请求测量可用性。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>可用性 <span style="color:#f92672">=</span> 成功请求数 / 总的请求数
+</span></span></code></pre></div><blockquote>
+<p>Measuring availability based on requests. For your service it may be easier to count successful and failed requests instead of “time available for use”.
+<strong>Availability = Successful Responses/Valid Requests</strong></p>
+</blockquote>
+<p><strong>针对硬依赖关系计算可用性</strong>：许多系统对其他系统具有硬依赖关系，依赖的系统中的中断会直接转换为调用系统的中断。例如，如果您有一个旨在实现 99.99% 可用性的系统，它对两个其他独立系统具有硬依赖关系，这两个系统都旨在实现 99.99% 的可用性，则工作负载在理论上可以实现 99.97% 的可用性：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Avail_invok × Avail_dep1 × Avail_dep2 <span style="color:#f92672">=</span> Avail_workload, e.g. 99.99% × 99.99% × 99.99% <span style="color:#f92672">=</span> 99.97%
+</span></span></code></pre></div><p><strong>针对冗余组件计算可用性</strong>：当系统涉及到使用独立的冗余组件（例如，不同可用区中的冗余资源）时，从理论上讲，可用性的计算方法是：100% 减去组件故障率的乘积。例如，如果系统使用了两个独立的组件，每个组件都具有 99.9% 的可用性，此依赖项的有效可用性为 99.9999%：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Avail_effective <span style="color:#f92672">=</span> Avail_MAX − <span style="color:#f92672">((</span>100% − Avail_dependency<span style="color:#f92672">)</span>×<span style="color:#f92672">(</span>100% − Avail_dependency<span style="color:#f92672">))</span>, e.g. 99.9999% <span style="color:#f92672">=</span> 100% − <span style="color:#f92672">(</span>0.1%×0.1%<span style="color:#f92672">)</span>
+</span></span></code></pre></div><h2 id="核心监控">核心监控</h2>
 <blockquote>
 <p>系统指标是评价系统健康程度的重要标准；指标可以分为：功能指标，性能指标等</p>
 </blockquote>
@@ -181,6 +122,40 @@ CR
 </ul>
 </li>
 </ul>
+<h2 id="oncall">ONCALL</h2>
+<blockquote>
+<p>故障处理期间，SRE 的思考和解决问题的方法论对正确处理问题非常关键。现代理论研究指出，在面临挑战时，一个人会主动或潜意识地选择下列两种处理方法之一</p>
+<ul>
+<li>依赖直觉，快速行动</li>
+<li>理性、专注、有意识认知活动</li>
+</ul>
+<p>当处理复杂系统问题时，第二种行事方式是更好的，会产生更好的处理结果。为确保工程师保持在第二种处理方式范围内，我们必须要减轻on-call所带来的压力。业务系统的重要性和操作所带来的影响程度会对on-call工程师造成巨大的精神压力，危害工程师的身体健康，并且可能导致SRE在处理问题过程中犯错误，从而影响到整个系统的可靠性。最理想的方法论是这样的：在有足够数据支撑的时候按步骤解决问题，同时不停地审视和验证目前所有的假设。
+SRE 知道如何寻求外部帮助，对减轻压力也很有帮助:</p>
+<ul>
+<li>清晰的问题升级路线</li>
+<li>清晰的应急处理步骤</li>
+<li>对事不对人的文化氛围</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<p>排班 ONCALL</p>
+<ul>
+<li>响应时间</li>
+<li>运维效率</li>
+<li>运维质量</li>
+<li>团队凝聚力</li>
+</ul>
+</li>
+<li>
+<p>ONCALL 任务</p>
+<ul>
+<li>常规任务</li>
+<li>应急任务</li>
+<li>升级路线</li>
+</ul>
+</li>
+</ul>
 <h2 id="故障分类">故障分类</h2>
 <ul>
 <li>线上变更：故障绝大部分是由于变更导致的；因此线上必须遵循变更军规，必须有审批，灰度，回滚等</li>
@@ -190,60 +165,29 @@ CR
 <li>系统过载：CPU，内存，磁盘，线程池，连接池等资源不足</li>
 <li>自然故障：路由器，网线等网络问题，服务器宕机，第三方服务故障，机房不可用</li>
 <li>容量评估</li>
+<li>过载保护: 强健的系统需要优雅地处理过载情况。过载保护主要是为了提升用户体验，保障服务质量，在发生突发流量时仍然能够提供一部分服务能力，而不是整个系统瘫痪。过载保护策略优先级，降级，限流，扩容，切流。其次评估系统容量，提前扩容以及事中快速自动化扩容、多活切流都是解决系统过载的方法。</li>
 </ul>
-<h2 id="系统设计">系统设计</h2>
+<h2 id="变更原则">变更原则</h2>
 <ul>
-<li>方案评审
-<ul>
-<li>评审原则，不同方案对比，最终方案优劣势。行业最佳实践</li>
-<li>资源占用，限制手段</li>
-<li>周边依赖</li>
-<li>故障处理
-<ul>
-<li>系统异常</li>
-<li>流量突增</li>
-<li>降级</li>
-<li>限流</li>
-<li>熔断</li>
+<li>回滚方案</li>
+<li>灰度节奏</li>
+<li>告警策略</li>
+<li>避免高峰期</li>
 </ul>
-</li>
-</ul>
-</li>
-<li>代码评审
+<h2 id="复盘机制">复盘机制</h2>
 <ul>
-<li>CI</li>
-<li>CR</li>
-</ul>
-</li>
-<li>软件测试
-<ul>
-<li>单元</li>
-<li>集成</li>
-<li>冒烟</li>
-<li>回归</li>
-<li>性能</li>
-<li>压力</li>
-<li>稳定性</li>
-<li>金丝雀发布</li>
-</ul>
-</li>
-<li>上线流程
-<ul>
-<li>军规</li>
-</ul>
-</li>
-<li><strong>过载保护</strong>
-强健的系统需要优雅地处理过载情况。过载保护主要是为了提升用户体验，保障服务质量，在发生突发流量时仍然能够提供一部分服务能力，而不是整个系统瘫痪。过载保护策略优先级，降级，限流，扩容，切流。其次评估系统容量，提前扩容以及事中快速自动化扩容、多活切流都是解决系统过载的方法。</li>
-</ul>
-<h2 id="日常机制">日常机制</h2>
-<ul>
-<li>复盘机制：对出过的线上事故一定要及时的进行复盘，通过复盘来发现我们现有流程、机制、潜在风险是否有问题。复盘虽属于事后行为，但很重要，我们需要通过复盘来看下次是否能预防此故障，或者是否能更快的定位和止损。</li>
+<li>故障复盘：对出过的线上事故一定要及时的进行复盘，通过复盘来发现我们现有流程、机制、潜在风险是否有问题。复盘虽属于事后行为，但很重要，我们需要通过复盘来看下次是否能预防此故障，或者是否能更快的定位和止损。</li>
 <li>稳定性周会、稳定性月会：我们通过各种定期的会议来总结一些阶段性进展和成果，拉齐大家认知，这也是大伙日常稳定性工作露出的一个机会，所以非常重要。</li>
 </ul>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html">https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/availability.html</a></li>
+<li><a href="https://flashcat.cloud/blog/google-sre-embracing-risk/">https://flashcat.cloud/blog/google-sre-embracing-risk/</a></li>
+</ol>
 
 </article>
 <div class="postlink">
-	<p><strong>本文链接地址: </strong><a href="">《2025-01-10 基础设施稳定性建设概要》</a><p>
+	<p><strong>本文链接地址: </strong><a href="">《2025-01-10 基础设施可用性建设概要》</a><p>
 </div>
 </div>
         </main>
