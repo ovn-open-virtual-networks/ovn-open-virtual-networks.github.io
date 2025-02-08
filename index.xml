@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>基础技术研究</title>
+    <title>基础架构技术研究</title>
     <link>https://blog.bamaicloud.com/</link>
-    <description>Recent content on 基础技术研究</description>
+    <description>Recent content on 基础架构技术研究</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 16 Jan 2025 22:05:40 -0500</lastBuildDate>
