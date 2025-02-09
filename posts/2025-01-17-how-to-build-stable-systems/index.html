@@ -3,49 +3,21 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-   <meta name="description" content="系统设计
+   <meta name="description" content="问题描述
+服务在高峰期被流量打挂，看表象很容易以为是预估不到位，机器资源不够，但其背后深层次的原因是服务本身不够健壮，服务在短暂的过载之后发生雪崩，进而引发重试风暴，如果这些服务是主流程、核心链路上的服务，那么就有可能导致整个系统的雪崩。一个稳健的系统，在负载压力增大，甚至超出理论最大负载时依然能够稳定的保持线性输出。那么如何构建一个稳健可靠的系统？
+首先了解如下系统性能指标概念：
 
-方案评审
-
-评审原则，不同方案对比，最终方案优劣势。行业最佳实践
-资源占用，限制手段
-周边依赖
-故障处理
-
-系统异常
-流量突增
-降级
-限流
-熔断
-故障快速恢复能力
+最大吞吐：绝大数情况下，我们的服务不会处于最大吞吐状态，它只是昙花一现。高负载状态下随着时间的推移，服务的队列和延迟会无限增加。
+持续吞吐：服务延迟可控状态的下的可持续的性能吞吐。
+目标吞吐：根据真实服务负载评估出的用于扩容的吞吐量。
 
 
-
-
-代码评审
-
-CI
-CR
-
-
-软件测试
-
-单元
-集成
-冒烟
-回归
-性能
-压力
-稳定性
-金丝雀发布
-
-
-上线流程
-
-军规
-
-
-">  
+Maximum Throughput:
+a situation that happens as a flash in the pan moment where the state of the system aligns perfectly for unusually high throughput. Most of the time our system is not capable of maximum throughput. If we drive the system at this level then over time our latency will be unbounded because of queue growth. This is useless information for our purposes.
+Sustainable Throughput:
+the throughput that our system can sustain indefinitely without latency becoming unbounded. This number is always less than the maximum throughput. If a system is driven above its sustainable throughput, it will either fail requests or see its latency grow without bound.
+Target Throughput:
+the real world throughput we use for scaling decisions. We will plan to divide the externally provided load among enough instances of our service so that each instance, on average, remains below its target throughput. We choose this value conservatively such that brief spikes in load or reductions in capacity do not cause us to violate our latency requirements. This value must be less than the sustainable throughput.">  
 
   <title>
     
@@ -57,7 +29,7 @@ CR
   
   
   
-  <link rel="stylesheet" href="/css/main.1fa58ff16f0777b464d699b5c7e5a7c05cc1cd9eb0840933fd40d4746f8dce721f5f64332253b98956db52463f2a7d1eada99b7e3fa9ff181df0c6384dff7904.css" integrity="sha512-H6WP8W8Hd7Rk1pm1x&#43;WnwFzBzZ6whAkz/UDUdG&#43;NznIfX2QzIlO5iVbbUkY/Kn0erambfj&#43;p/xgd8MY4Tf95BA==" />
+  <link rel="stylesheet" href="/css/main.d1870d957d0da98d44f401b7105907bd4ea27ed98759342e31f0f02edb9d0da2c2850837407e119177488074c0fd7426d49d90a5f6dfd1e936187d74d21f8589.css" integrity="sha512-0YcNlX0NqY1E9AG3EFkHvU6iftmHWTQuMfDwLtudDaLChQg3QH4RkXdIgHTA/XQm1J2Qpfbf0ek2GH100h&#43;FiQ==" />
   
   
 </head>
@@ -81,55 +53,72 @@ CR
         <aside  class="toc" >
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#系统设计">系统设计</a></li>
+    <li><a href="#问题描述">问题描述</a></li>
+    <li><a href="#构建方法">构建方法</a></li>
+    <li><a href="#问题解答">问题解答</a></li>
+    <li><a href="#参考">参考</a></li>
   </ul>
 </nav>
         </aside>
     
 
-    <h2 id="系统设计">系统设计</h2>
+    <h2 id="问题描述">问题描述</h2>
+<p>服务在高峰期被流量打挂，看表象很容易以为是预估不到位，机器资源不够，但其背后深层次的原因是服务本身不够健壮，服务在短暂的过载之后发生雪崩，进而引发重试风暴，如果这些服务是主流程、核心链路上的服务，那么就有可能导致整个系统的雪崩。一个稳健的系统，在负载压力增大，甚至超出理论最大负载时依然能够稳定的保持线性输出。那么如何构建一个稳健可靠的系统？
+首先了解如下系统性能指标概念：</p>
 <ul>
-<li>方案评审
+<li>最大吞吐：绝大数情况下，我们的服务不会处于最大吞吐状态，它只是昙花一现。高负载状态下随着时间的推移，服务的队列和延迟会无限增加。</li>
+<li>持续吞吐：服务延迟可控状态的下的可持续的性能吞吐。</li>
+<li>目标吞吐：根据真实服务负载评估出的用于扩容的吞吐量。</li>
+</ul>
+<blockquote>
+<p><em><strong>Maximum Throughput:</strong></em><br>
+a situation that happens as a flash in the pan moment where the state of the system aligns perfectly for unusually high throughput. Most of the time our system is not capable of maximum throughput. If we drive the system at this level then over time our latency will be unbounded because of queue growth. This is useless information for our purposes.<br>
+<em><strong>Sustainable Throughput:</strong></em><br>
+the throughput that our system can sustain indefinitely without latency becoming unbounded. This number is always less than the maximum throughput. If a system is driven above its sustainable throughput, it will either fail requests or see its latency grow without bound.<br>
+<em><strong>Target Throughput:</strong></em><br>
+the real world throughput we use for scaling decisions. We will plan to divide the externally provided load among enough instances of our service so that each instance, on average, remains below its target throughput. We choose this value conservatively such that brief spikes in load or reductions in capacity do not cause us to violate our latency requirements. This value must be less than the sustainable throughput.</p>
+</blockquote>
+<h2 id="构建方法">构建方法</h2>
 <ul>
-<li>评审原则，不同方案对比，最终方案优劣势。行业最佳实践</li>
-<li>资源占用，限制手段</li>
-<li>周边依赖</li>
-<li>故障处理
+<li>负载指标：健壮的服务应该具备完善的表征系统负载的指标，如资源利用率，计数器，队列状态，请求延迟等</li>
+<li>拒绝服务：一个服务除了能够实时表征自己服务负载的指标之外，应该感知这些指标并且当超出服务能力上限时，拒绝超出服务能力的请求。</li>
+<li>反馈机制：服务端和客户端之间要有反馈机制，客户端能够知晓后端的负载情况，调整自己的策略。
+<img src="/2025-02-09-sustainable.jpeg" alt=""></li>
+</ul>
+<h2 id="问题解答">问题解答</h2>
 <ul>
-<li>系统异常</li>
-<li>流量突增</li>
-<li>降级</li>
-<li>限流</li>
-<li>熔断</li>
-<li>故障快速恢复能力</li>
+<li>
+<p>我的服务对延迟和队列没有要求</p>
+<ul>
+<li>任何服务处理请求都有延迟。如果不要求延迟指标，只代表&quot;max latency &lt; infinity&quot;，理论上依然存在一个界定点来区分服务的最大吞吐量和持续吞吐量。</li>
+<li>任何服务都有请求队列，有时功能可能迁移到了用户端。</li>
+</ul>
+</li>
+<li>
+<p>队列是错误的存在吗？</p>
+<ul>
+<li>本质上非阻塞队列以增加的延迟换取更高的可用性。当上游需求出现峰值时，队列让系统通过增加处理延迟来吸收峰值，而不是让请求失败。</li>
+<li>Throughput dependent latency is always caused by queue growth</li>
+<li>Queues should not be growing if the system is running within its capacity.</li>
+</ul>
+</li>
+<li>
+<p>反馈机制是否可以通过外部监控＋流量降级方案替代？</p>
+<ul>
+<li>监控是有滞后的，流量降级是有损的，这导致降级需要谨慎。这些因素都决定了，外部监控＋流量降级这套机制，是用来解决故障，而非让服务更加健壮的。服务的健壮性本身，要依赖服务自身来解决。</li>
+</ul>
+</li>
+<li>
+<p>如何统一所有客户端服务端反馈机制？</p>
+<ul>
+<li>RPC 框架</li>
 </ul>
 </li>
 </ul>
-</li>
-<li>代码评审
-<ul>
-<li>CI</li>
-<li>CR</li>
-</ul>
-</li>
-<li>软件测试
-<ul>
-<li>单元</li>
-<li>集成</li>
-<li>冒烟</li>
-<li>回归</li>
-<li>性能</li>
-<li>压力</li>
-<li>稳定性</li>
-<li>金丝雀发布</li>
-</ul>
-</li>
-<li>上线流程
-<ul>
-<li>军规</li>
-</ul>
-</li>
-</ul>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="https://medium.com/engineers-optimizely/what-is-sustainable-throughput-ba2cdec81fce">https://medium.com/engineers-optimizely/what-is-sustainable-throughput-ba2cdec81fce</a></li>
+</ol>
 
 </article>
 <div class="postlink">
