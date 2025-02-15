@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en-us"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <meta name="description" content="总结
+
+AI 大模型对网络的需求主要体现在规模、带宽、时延以及稳定性
+
+GPU 服务器架构
+
+
+DGX A100 配置
+
+8*A100 GPUs
+Each GPU offers 600 GB/s NVLink bandwidth
+Compute Connections (IB): There are 8 ConnectX-6 network cards, providing a combined total bandwidth of 8 * 200 Gbps
+Storage Connections (IB): 2 connections for storage
+
+
+Notably, the NVLink bandwidth is measured in bytes, while network bandwidth typically uses bits. In this system, the internal bandwidth reaches 4.8 TB/s, whereas the overall network bandwidth is 1.6 Tbps, resulting in a 24-fold difference.">  
+
+  <title>
+    
+      2025-02-10 GPU 万卡集群网络关键技术研究
+    
+  </title>
+
+  <link rel="shortcut icon" type="image/x-icon" href="/" />
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.876dec024a2e579751e24e23b55459cb7837b927575bc086cdebd76538da86d200e9bd54b0712e743cee7a00db4c4a768f379d8f8c6b59fa754aecfd8fc5bfa1.css" integrity="sha512-h23sAkouV5dR4k4jtVRZy3g3uSdXW8CGzevXZTjahtIA6b1UsHEudDzuegDbTEp2jzedj4xrWfp1Suz9j8W/oQ==" />
+  
+  
+</head>
+<body a="auto">
+        <main class="page-content" aria-label="Content">
+            <div class="w">
+<a href="/">返回首页</a>
+
+
+<article>
+    <p class="post-meta">
+        <time datetime="2025-02-10 06:40:18 -0500 EST">
+            2025-02-10
+        </time>
+    </p>
+
+    <h1>2025-02-10 GPU 万卡集群网络关键技术研究</h1>
+
+    
+        <aside  class="toc" >
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#总结">总结</a></li>
+    <li><a href="#gpu-服务器架构">GPU 服务器架构</a></li>
+  </ul>
+</nav>
+        </aside>
+    
+
+    <h2 id="总结">总结</h2>
+<ul>
+<li>AI 大模型对网络的需求主要体现在<em><strong>规模、带宽、时延以及稳定性</strong></em></li>
+</ul>
+<h2 id="gpu-服务器架构">GPU 服务器架构</h2>
+<ul>
+<li>
+<p>DGX A100 配置</p>
+<ul>
+<li>8*A100 GPUs</li>
+<li>Each GPU offers 600 GB/s NVLink bandwidth</li>
+<li>Compute Connections (IB): There are 8 ConnectX-6 network cards, providing a combined total bandwidth of 8 * 200 Gbps</li>
+<li>Storage Connections (IB): 2 connections for storage</li>
+</ul>
+<blockquote>
+<p>Notably, the NVLink bandwidth is measured in bytes, while network bandwidth typically uses bits. In this system, the internal bandwidth reaches 4.8 TB/s, whereas the overall network bandwidth is 1.6 Tbps, resulting in a 24-fold difference.</p>
+</blockquote>
+</li>
+<li>
+<p>DGX-SuperPod-A100</p>
+<ul>
+<li>Each SU includes 5 Compute Racks and 1 Leaf Network Rack.</li>
+<li>Each Compute Rack houses 4 DGX A100 Systems and 2 3U Power Distribution Units (PDUs), totaling 32 A100 GPUs per Compute Rack. Thus, an SU comprises 160 A100 GPUs.</li>
+<li>Leaf Network Rack contains 8 Compute Switches (1U) and 2 Storage Switches (1U).</li>
+<li>Compute Switches utilize QM8790 200 Gb/s IB switches, resulting in a total of 320 ports:
+<ul>
+<li>160 ports connect to the ConnectX-6 network cards in the Compute Racks, providing 200 Gbps per GPU</li>
+<li>160 ports connect to the Spine Rack</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</article>
+
+    			<div class="postlink">
+	<p><strong>本文链接地址: </strong><a href="">《2025-02-10 GPU 万卡集群网络关键技术研究》</a><p>
+</div>
+
+                
+    
+        
+        <footer class="site-footer">
+            <p>&copy; 2025 基础架构技术研究</p>
+        </footer>
+    
+
+
+				
+            </div>
+        </main>
+    </body>
+</html>

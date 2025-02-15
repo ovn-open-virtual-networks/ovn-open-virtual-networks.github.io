@@ -6,8 +6,15 @@
     <description>Recent content on 基础架构技术研究</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 16 Jan 2025 22:05:40 -0500</lastBuildDate>
+    <lastBuildDate>Mon, 10 Feb 2025 06:40:18 -0500</lastBuildDate>
     <atom:link href="https://blog.bamaicloud.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2025-02-10 GPU 万卡集群网络关键技术研究</title>
+      <link>https://blog.bamaicloud.com/gpu/2025-02-10-networking-topology-of-a-gpu-cluster/</link>
+      <pubDate>Mon, 10 Feb 2025 06:40:18 -0500</pubDate>
+      <guid>https://blog.bamaicloud.com/gpu/2025-02-10-networking-topology-of-a-gpu-cluster/</guid>
+      <description>&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;AI 大模型对网络的需求主要体现在&lt;em&gt;&lt;strong&gt;规模、带宽、时延以及稳定性&lt;/strong&gt;&lt;/em&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;gpu-服务器架构&#34;&gt;GPU 服务器架构&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;DGX A100 配置&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;8*A100 GPUs&lt;/li&gt;&#xA;&lt;li&gt;Each GPU offers 600 GB/s NVLink bandwidth&lt;/li&gt;&#xA;&lt;li&gt;Compute Connections (IB): There are 8 ConnectX-6 network cards, providing a combined total bandwidth of 8 * 200 Gbps&lt;/li&gt;&#xA;&lt;li&gt;Storage Connections (IB): 2 connections for storage&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Notably, the NVLink bandwidth is measured in bytes, while network bandwidth typically uses bits. In this system, the internal bandwidth reaches 4.8 TB/s, whereas the overall network bandwidth is 1.6 Tbps, resulting in a 24-fold difference.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>2025-01-17 如何构建一个稳健可靠的系统</title>
       <link>https://blog.bamaicloud.com/posts/2025-01-17-how-to-build-stable-systems/</link>
